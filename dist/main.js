@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
 // main.jsx
-import React4 from "react";
+import React6 from "react";
 import { render } from "ink";
 
 // src/App.jsx
 import open from "open";
-import React3, { useState as useState3 } from "react";
-import { Box as Box3, Text as Text3, useInput as useInput2 } from "ink";
+import React5, { useState as useState5 } from "react";
+import { Box as Box5, Text as Text5, useInput as useInput3 } from "ink";
 
 // config.js
 var THEME = {
@@ -80,6 +80,65 @@ function SelectInput_default({ options, onSelect }) {
   return /* @__PURE__ */ React2.createElement(Box2, { flexDirection: "column" }, options.map((opt, i) => /* @__PURE__ */ React2.createElement(Text2, { key: opt, color: i === index ? "green" : "gray" }, i === index ? "\u25B6 " : "  ", opt)));
 }
 
+// src/components/FillInput.jsx
+import React4, { useState as useState4 } from "react";
+
+// src/components/TextInput.jsx
+import React3, { useState as useState3 } from "react";
+import { Box as Box3, Text as Text3, useInput as useInput2 } from "ink";
+function TextInput({ value = "", onChange, onSubmit }) {
+  const [internal, setInternal] = useState3(value);
+  useInput2((input, key) => {
+    if (key.return) {
+      onSubmit == null ? void 0 : onSubmit(internal);
+      return;
+    }
+    if (key.backspace || key.delete) {
+      const next = internal.slice(0, -1);
+      setInternal(next);
+      onChange == null ? void 0 : onChange(next);
+      return;
+    }
+    if (!key.ctrl && !key.meta) {
+      const next = internal + input;
+      setInternal(next);
+      onChange == null ? void 0 : onChange(next);
+    }
+  });
+  return /* @__PURE__ */ React3.createElement(Box3, null, /* @__PURE__ */ React3.createElement(Text3, { color: "cyan" }, internal), /* @__PURE__ */ React3.createElement(Text3, { color: "green" }, "\u258C"));
+}
+
+// src/components/FillInput.jsx
+import { Box as Box4, Text as Text4 } from "ink";
+function FillInput({ inputs, onFill }) {
+  const [currentIndex, setCurrentIndex] = useState4(0);
+  const [values, setValues] = useState4({});
+  const currentInput = inputs[currentIndex];
+  const handleSubmit = (value) => {
+    const newValues = { ...values, [currentInput.key]: value };
+    setValues(newValues);
+    if (currentIndex < inputs.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    } else {
+      onFill(newValues);
+    }
+  };
+  return /* @__PURE__ */ React4.createElement(Box4, { flexDirection: "column" }, /* @__PURE__ */ React4.createElement(Text4, null, currentInput.label), currentInput.type == "select" ? /* @__PURE__ */ React4.createElement(
+    SelectInput_default,
+    {
+      options: currentInput.options,
+      onSelect: handleSubmit
+    }
+  ) : /* @__PURE__ */ React4.createElement(
+    TextInput,
+    {
+      value: values[currentInput.key] || "",
+      onChange: (value) => setValues({ ...values, [currentInput.key]: value }),
+      onSubmit: handleSubmit
+    }
+  ));
+}
+
 // src/App.jsx
 var COMMANDS_TIMERS = /* @__PURE__ */ new Set();
 var COMMANDS_MAP = {
@@ -90,10 +149,10 @@ var COMMANDS_MAP = {
     })),
     resultParser: (res) => {
       if (res.error) {
-        return /* @__PURE__ */ React3.createElement(Text3, { color: "red" }, JSON.stringify(res, null, 10));
+        return /* @__PURE__ */ React5.createElement(Text5, { color: "red" }, JSON.stringify(res, null, 5));
       }
-      return /* @__PURE__ */ React3.createElement(
-        Box3,
+      return /* @__PURE__ */ React5.createElement(
+        Box5,
         {
           flexDirection: "column",
           gap: 1,
@@ -103,11 +162,11 @@ var COMMANDS_MAP = {
           padding: 1,
           justifyContent: "flex-start"
         },
-        /* @__PURE__ */ React3.createElement(Text3, { color: "yellowBright" }, res.quote),
-        /* @__PURE__ */ React3.createElement(Box3, { justifyContent: "flex-end", marginTop: 1 }, /* @__PURE__ */ React3.createElement(Text3, { color: "magentaBright" }, res.author))
+        /* @__PURE__ */ React5.createElement(Text5, { color: "yellowBright" }, res.quote),
+        /* @__PURE__ */ React5.createElement(Box5, { justifyContent: "flex-end", marginTop: 1 }, /* @__PURE__ */ React5.createElement(Text5, { color: "magentaBright" }, res.author))
       );
     },
-    expectedTime: 0.5
+    expectedTime: 0.8
   },
   "Get Random Anime to Watch": {
     func: () => fetch("https://api.jikan.moe/v4/random/anime").then((r) => r.json()).then((d) => {
@@ -131,15 +190,15 @@ var COMMANDS_MAP = {
     resultParser: (res) => {
       var _a, _b;
       if (res.error) {
-        return /* @__PURE__ */ React3.createElement(Text3, { color: "red" }, "ERROR FETCHING ", res.url);
+        return /* @__PURE__ */ React5.createElement(Text5, { color: "red" }, "ERROR FETCHING ", res.url);
       }
       const timer = setTimeout(() => {
         open(res.url);
         COMMANDS_TIMERS.delete(timer);
       }, 8e3);
       COMMANDS_TIMERS.add(timer);
-      return /* @__PURE__ */ React3.createElement(
-        Box3,
+      return /* @__PURE__ */ React5.createElement(
+        Box5,
         {
           flexDirection: "column",
           gap: 1,
@@ -149,9 +208,9 @@ var COMMANDS_MAP = {
           padding: 1,
           justifyContent: "flex-start"
         },
-        /* @__PURE__ */ React3.createElement(Text3, { ...THEME.text.info }, "Anime page will open in 8 seconds"),
-        /* @__PURE__ */ React3.createElement(
-          Text3,
+        /* @__PURE__ */ React5.createElement(Text5, { ...THEME.text.info }, "Anime page will open in 8 seconds"),
+        /* @__PURE__ */ React5.createElement(
+          Text5,
           {
             color: "yellowBright"
           },
@@ -165,16 +224,16 @@ var COMMANDS_MAP = {
               return n.title + " ".repeat(repeatCount) + "|" + " ".repeat(repeatCount);
           })
         ),
-        /* @__PURE__ */ React3.createElement(
-          Text3,
+        /* @__PURE__ */ React5.createElement(
+          Text5,
           {
             color: "magentaBright"
           },
           "Genres: ",
           res.genres.map((nm) => " " + nm.name)
         ),
-        /* @__PURE__ */ React3.createElement(
-          Text3,
+        /* @__PURE__ */ React5.createElement(
+          Text5,
           {
             color: "whiteBright"
           },
@@ -183,8 +242,8 @@ var COMMANDS_MAP = {
           " | Popularity: ",
           res.popularity
         ),
-        /* @__PURE__ */ React3.createElement(
-          Text3,
+        /* @__PURE__ */ React5.createElement(
+          Text5,
           {
             color: "green"
           },
@@ -193,8 +252,8 @@ var COMMANDS_MAP = {
           " | Status: ",
           res.status
         ),
-        /* @__PURE__ */ React3.createElement(
-          Text3,
+        /* @__PURE__ */ React5.createElement(
+          Text5,
           {
             color: "gray"
           },
@@ -204,6 +263,27 @@ var COMMANDS_MAP = {
       );
     },
     expectedTime: 1.3
+  },
+  "IP Info": {
+    func: async (inpts) => {
+      return fetch(`https://ipinfo.io/${inpts.ip}/json`, {
+        headers: {
+          "Accept": "application/json"
+        }
+      }).then((r) => r.json()).catch((e) => ({
+        error: "Request Failed",
+        url: `https://ipinfo.io/${inpts.ip}`
+      }));
+    },
+    resultParser: (res) => {
+      if (res.error) {
+        return /* @__PURE__ */ React5.createElement(Text5, { color: "red" }, JSON.stringify(res, null, 5));
+      }
+      return /* @__PURE__ */ React5.createElement(Text5, null, JSON.stringify(res, null, 5));
+    },
+    inputs: [
+      { label: "IP [Empty for yours]", key: "ip" }
+    ]
   },
   "Feeling Lucky": {
     func: async () => {
@@ -234,7 +314,7 @@ var COMMANDS_MAP = {
       ];
       return fetch(`https://asciified.thelicato.io/api/v2/ascii?text=${encodeURI(texts[Math.floor(Math.random() * texts.length)])}`).then((r) => r.text()).catch((e) => "REQUEST FAILED [https://asciified.thelicato.io/api/v2/ascii?text=bpn333]");
     },
-    expectedTime: 0.1
+    expectedTime: 0.5
   },
   "Credit": {
     func: () => {
@@ -244,34 +324,41 @@ var COMMANDS_MAP = {
   }
 };
 function App_default() {
-  const [command, setCommand] = useState3();
-  const [result, setResult] = useState3();
-  useInput2((inpt, key) => {
-    if (inpt == "r" || inpt == "q" || key.escape) {
-      setCommand(null);
-      setResult("");
-      for (const timr of COMMANDS_TIMERS) clearTimeout(timr);
-      COMMANDS_TIMERS.clear();
+  const [command, setCommand] = useState5();
+  const [commandInputs, setCommandInputs] = useState5(null);
+  const [result, setResult] = useState5();
+  useInput3(
+    (inpt, key) => {
+      if (inpt == "r" || inpt == "q" || key.escape) {
+        setCommand(null);
+        setCommandInputs(null);
+        setResult("");
+        for (const timr of COMMANDS_TIMERS) clearTimeout(timr);
+        COMMANDS_TIMERS.clear();
+      }
+    },
+    {
+      isActive: result
     }
-  });
+  );
   if (!process.stdout.isTTY) {
     console.log("Open this URL:", url);
     return;
   }
-  return /* @__PURE__ */ React3.createElement(React3.Fragment, null, /* @__PURE__ */ React3.createElement(Box3, { marginY: 2, ...THEME.box.heading }, /* @__PURE__ */ React3.createElement(Text3, { ...THEME.text.title }, "RANDOM STUFF TO TRY")), command ? /* @__PURE__ */ React3.createElement(
+  return /* @__PURE__ */ React5.createElement(React5.Fragment, null, /* @__PURE__ */ React5.createElement(Box5, { marginY: 2, ...THEME.box.heading }, /* @__PURE__ */ React5.createElement(Text5, { ...THEME.text.title }, "RANDOM STUFF TO TRY")), command ? COMMANDS_MAP[command].inputs && !commandInputs ? /* @__PURE__ */ React5.createElement(FillInput, { inputs: COMMANDS_MAP[command].inputs, onFill: (dta) => setCommandInputs(dta) }) : /* @__PURE__ */ React5.createElement(
     Loader,
     {
-      func: COMMANDS_MAP[command].func,
+      func: commandInputs ? async () => COMMANDS_MAP[command].func(commandInputs) : COMMANDS_MAP[command].func,
       expectedTime: COMMANDS_MAP[command].expectedTime,
       onRes: (d) => {
         if (COMMANDS_MAP[command].resultParser)
           setResult(COMMANDS_MAP[command].resultParser(d));
         else
-          setResult(/* @__PURE__ */ React3.createElement(Text3, null, d));
+          setResult(/* @__PURE__ */ React5.createElement(Text5, null, d));
       }
     }
-  ) : /* @__PURE__ */ React3.createElement(SelectInput_default, { options: Object.keys(COMMANDS_MAP), onSelect: (d) => setCommand(d) }), result && /* @__PURE__ */ React3.createElement(React3.Fragment, null, /* @__PURE__ */ React3.createElement(Box3, null, result), /* @__PURE__ */ React3.createElement(Box3, { marginY: 1 }, /* @__PURE__ */ React3.createElement(Text3, { ...THEME.text.info }, "press [r|q|esc] to reset"))));
+  ) : /* @__PURE__ */ React5.createElement(SelectInput_default, { options: Object.keys(COMMANDS_MAP), onSelect: (d) => setCommand(d) }), result && /* @__PURE__ */ React5.createElement(React5.Fragment, null, /* @__PURE__ */ React5.createElement(Box5, null, result), /* @__PURE__ */ React5.createElement(Box5, { marginY: 1 }, /* @__PURE__ */ React5.createElement(Text5, { ...THEME.text.info }, "press [r|q|esc] to reset"))));
 }
 
 // main.jsx
-render(/* @__PURE__ */ React4.createElement(App_default, null));
+render(/* @__PURE__ */ React6.createElement(App_default, null));

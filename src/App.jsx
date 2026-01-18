@@ -4,6 +4,7 @@ import { Box, Text, useInput } from "ink";
 import { THEME } from "../config";
 import FakeProgress from "./components/FakeProgress";
 import SelectInput from "./components/SelectInput";
+import FillInput from "./components/FillInput";
 
 let COMMANDS_TIMERS = new Set();
 const COMMANDS_MAP = {
@@ -15,7 +16,7 @@ const COMMANDS_MAP = {
             })),
         resultParser: (res) => {
             if (res.error) {
-                return <Text color={"red"}>{JSON.stringify(res, null, 10)}</Text>
+                return <Text color={"red"}>{JSON.stringify(res, null, 5)}</Text>
             }
             return (
                 <Box
@@ -34,7 +35,7 @@ const COMMANDS_MAP = {
                 </Box>
             )
         },
-        expectedTime: 0.5
+        expectedTime: 0.8
     },
     "Get Random Anime to Watch": {
         func: () => fetch("https://api.jikan.moe/v4/random/anime").then(r => r.json()).then(d => {
@@ -117,6 +118,27 @@ const COMMANDS_MAP = {
         },
         expectedTime: 1.3
     },
+    "IP Info": {
+        func: async (inpts) => {
+            return fetch(`https://ipinfo.io/${inpts.ip}/json`, {
+                headers: {
+                    "Accept": "application/json"
+                }
+            }).then(r => r.json()).catch(e => ({
+                error: "Request Failed",
+                url: `https://ipinfo.io/${inpts.ip}`,
+            }))
+        },
+        resultParser: (res) => {
+            if (res.error) {
+                return <Text color={"red"}>{JSON.stringify(res, null, 5)}</Text>
+            }
+            return <Text>{JSON.stringify(res, null, 5)}</Text>
+        },
+        inputs: [
+            { label: "IP [Empty for yours]", key: "ip" }
+        ],
+    },
     "Feeling Lucky": {
         func: async () => {
             const texts = [
@@ -148,7 +170,7 @@ const COMMANDS_MAP = {
                 .then(r => r.text())
                 .catch(e => "REQUEST FAILED [https://asciified.thelicato.io/api/v2/ascii?text=bpn333]")
         },
-        expectedTime: 0.1
+        expectedTime: 0.5
     },
     "Credit": {
         func: () => {
@@ -160,18 +182,24 @@ const COMMANDS_MAP = {
 
 export default function () {
     const [command, setCommand] = useState();
+    const [commandInputs, setCommandInputs] = useState(null);
     const [result, setResult] = useState();
 
     useInput((inpt, key) => {
         if (inpt == "r" || inpt == "q" || key.escape) {
             setCommand(null);
+            setCommandInputs(null);
             setResult('');
 
             // hacky way to clear all timeouts
             for (const timr of COMMANDS_TIMERS) clearTimeout(timr);
             COMMANDS_TIMERS.clear();
         }
-    })
+    },
+        {
+            isActive: result
+        }
+    )
 
     if (!process.stdout.isTTY) {
         console.log("Open this URL:", url);
@@ -185,16 +213,24 @@ export default function () {
             </Box>
             {
                 command ?
-                    <FakeProgress
-                        func={COMMANDS_MAP[command].func}
-                        expectedTime={COMMANDS_MAP[command].expectedTime}
-                        onRes={(d) => {
-                            if (COMMANDS_MAP[command].resultParser)
-                                setResult(COMMANDS_MAP[command].resultParser(d))
-                            else
-                                setResult(<Text>{d}</Text>)
-                        }}
-                    />
+                    COMMANDS_MAP[command].inputs && !commandInputs
+                        ?
+                        <FillInput inputs={COMMANDS_MAP[command].inputs} onFill={(dta) => setCommandInputs(dta)} />
+                        :
+                        <FakeProgress
+                            func={
+                                commandInputs ?
+                                    async () => COMMANDS_MAP[command].func(commandInputs)
+                                    : COMMANDS_MAP[command].func
+                            }
+                            expectedTime={COMMANDS_MAP[command].expectedTime}
+                            onRes={(d) => {
+                                if (COMMANDS_MAP[command].resultParser)
+                                    setResult(COMMANDS_MAP[command].resultParser(d))
+                                else
+                                    setResult(<Text>{d}</Text>)
+                            }}
+                        />
                     :
                     <SelectInput options={Object.keys(COMMANDS_MAP)} onSelect={(d) => setCommand(d)} />
             }

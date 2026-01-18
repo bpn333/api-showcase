@@ -1,22 +1,29 @@
 {
   "name": "api-showcase",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "main.jsx",
   "scripts": {
     "dev": "tsx main.jsx",
+    "build": "tsup main.jsx --format esm --platform node --out-dir dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "api-showcase": "./main.jsx"
+    "api-showcase": "./dist/main.js"
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "ink": "^6.6.0",
     "open": "^11.0.0",
-    "react": "^19.2.3",
-    "tsx": "^4.21.0"
+    "react": "^19.2.3"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
   }
 }

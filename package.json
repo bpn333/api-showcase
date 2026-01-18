@@ -1,0 +1,22 @@
+{
+  "name": "random-stuff",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "main.jsx",
+  "scripts": {
+    "dev": "tsx main.jsx",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "random-stuff": "./main.jsx"
+  },
+  "dependencies": {
+    "ink": "^6.6.0",
+    "open": "^11.0.0",
+    "react": "^19.2.3",
+    "tsx": "^4.21.0"
+  }
+}

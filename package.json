@@ -1,5 +1,5 @@
 {
-  "name": "random-stuff",
+  "name": "api-showcase",
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
@@ -11,7 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "random-stuff": "./main.jsx"
+    "api-showcase": "./main.jsx"
   },
   "dependencies": {
     "ink": "^6.6.0",

@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 
 // main.jsx
-import React6 from "react";
+import React11 from "react";
 import { render } from "ink";
 
 // src/App.jsx
-import open from "open";
-import React5, { useState as useState5 } from "react";
-import { Box as Box5, Text as Text5, useInput as useInput3 } from "ink";
+import React10, { useRef, useState as useState5 } from "react";
+import { Box as Box7, Text as Text10, useInput as useInput4 } from "ink";
 
 // config.js
 var THEME = {
@@ -77,7 +76,7 @@ function SelectInput_default({ options, onSelect }) {
       onSelect(options[index]);
     }
   });
-  return /* @__PURE__ */ React2.createElement(Box2, { flexDirection: "column" }, options.map((opt, i) => /* @__PURE__ */ React2.createElement(Text2, { key: opt, color: i === index ? "green" : "gray" }, i === index ? "\u25B6 " : "  ", opt)));
+  return /* @__PURE__ */ React2.createElement(Box2, { flexDirection: "column" }, options.map((opt, i) => /* @__PURE__ */ React2.createElement(Text2, { key: opt, color: i === index ? "green" : "gray" }, i === index ? "\u25B6  " : "   ", opt)));
 }
 
 // src/components/FillInput.jsx
@@ -139,33 +138,144 @@ function FillInput({ inputs, onFill }) {
   ));
 }
 
-// src/App.jsx
-var COMMANDS_TIMERS = /* @__PURE__ */ new Set();
-var COMMANDS_MAP = {
+// src/API/RandomQuote.jsx
+import React5 from "react";
+import { Box as Box5, Text as Text5 } from "ink";
+function RandomQuote({ result }) {
+  if (result.error) {
+    return /* @__PURE__ */ React5.createElement(Text5, { color: "red" }, JSON.stringify(result, null, 5));
+  }
+  return /* @__PURE__ */ React5.createElement(
+    Box5,
+    {
+      flexDirection: "column",
+      gap: 1,
+      width: 80,
+      borderStyle: "round",
+      borderColor: "cyanBright",
+      padding: 1,
+      justifyContent: "flex-start"
+    },
+    /* @__PURE__ */ React5.createElement(Text5, { color: "yellowBright" }, result.quote),
+    /* @__PURE__ */ React5.createElement(Box5, { justifyContent: "flex-end", marginTop: 1 }, /* @__PURE__ */ React5.createElement(Text5, { color: "magentaBright" }, result.author))
+  );
+}
+
+// src/API/RandomAnime.jsx
+import open from "open";
+import React6 from "react";
+import { Box as Box6, Text as Text6, useInput as useInput3 } from "ink";
+function RandomAnime({ result }) {
+  var _a, _b;
+  useInput3((inpt, key) => {
+    if (inpt == "o")
+      open(result.url);
+  }, { isActive: !result.error });
+  if (result.error) {
+    return /* @__PURE__ */ React6.createElement(Text6, { color: "red" }, "ERROR FETCHING ", result.url);
+  }
+  return /* @__PURE__ */ React6.createElement(
+    Box6,
+    {
+      flexDirection: "column",
+      gap: 1,
+      width: 80,
+      borderStyle: "round",
+      borderColor: "cyanBright",
+      padding: 1,
+      justifyContent: "flex-start"
+    },
+    /* @__PURE__ */ React6.createElement(Text6, { ...THEME.text.info }, "Press 'o' to open anime page"),
+    /* @__PURE__ */ React6.createElement(
+      Text6,
+      {
+        color: "yellowBright"
+      },
+      "Name: ",
+      (_a = result.titles) == null ? void 0 : _a.map((n, indx) => {
+        var _a2;
+        const repeatCount = 3;
+        if (indx == ((_a2 = result == null ? void 0 : result.titles) == null ? void 0 : _a2.length) - 1)
+          return n.title;
+        else
+          return n.title + " ".repeat(repeatCount) + "|" + " ".repeat(repeatCount);
+      })
+    ),
+    /* @__PURE__ */ React6.createElement(
+      Text6,
+      {
+        color: "magentaBright"
+      },
+      "Genres: ",
+      result.genres.map((nm) => " " + nm.name)
+    ),
+    /* @__PURE__ */ React6.createElement(
+      Text6,
+      {
+        color: "whiteBright"
+      },
+      "Score: ",
+      result.score,
+      " | Popularity: ",
+      result.popularity
+    ),
+    /* @__PURE__ */ React6.createElement(
+      Text6,
+      {
+        color: "green"
+      },
+      "Episodes: ",
+      result.episodes,
+      " | Status: ",
+      result.status
+    ),
+    /* @__PURE__ */ React6.createElement(
+      Text6,
+      {
+        color: "gray"
+      },
+      "Aired On: ",
+      (_b = result.aired) == null ? void 0 : _b.string
+    )
+  );
+}
+
+// src/API/IPInfo.jsx
+import React7 from "react";
+import { Text as Text7 } from "ink";
+function IPInfo({ result }) {
+  if (result.error) {
+    return /* @__PURE__ */ React7.createElement(Text7, { color: "red" }, JSON.stringify(result, null, 5));
+  }
+  return /* @__PURE__ */ React7.createElement(Text7, null, JSON.stringify(result, null, 5));
+}
+
+// src/API/FeelingLucky.jsx
+import React8 from "react";
+import { Text as Text8 } from "ink";
+function FeelingLucky({ result }) {
+  return /* @__PURE__ */ React8.createElement(Text8, null, result);
+}
+
+// src/API/Credit.jsx
+import open2 from "open";
+import React9, { useEffect as useEffect2 } from "react";
+import { Text as Text9 } from "ink";
+function Credit({ result }) {
+  useEffect2(() => {
+    open2("https://github.com/bpn333");
+  }, []);
+  return /* @__PURE__ */ React9.createElement(Text9, null, result);
+}
+
+// src/API/COMMANDS_MAP.js
+var COMMANDS_MAP_default = {
   "Get Random Quote": {
     func: () => fetch("https://quotes-api-self.vercel.app/quote").then((r) => r.json()).catch((e) => ({
       error: "Request Failed",
       url: "https://quotes-api-self.vercel.app/quote"
     })),
-    resultParser: (res) => {
-      if (res.error) {
-        return /* @__PURE__ */ React5.createElement(Text5, { color: "red" }, JSON.stringify(res, null, 5));
-      }
-      return /* @__PURE__ */ React5.createElement(
-        Box5,
-        {
-          flexDirection: "column",
-          gap: 1,
-          width: 80,
-          borderStyle: "round",
-          borderColor: "cyanBright",
-          padding: 1,
-          justifyContent: "flex-start"
-        },
-        /* @__PURE__ */ React5.createElement(Text5, { color: "yellowBright" }, res.quote),
-        /* @__PURE__ */ React5.createElement(Box5, { justifyContent: "flex-end", marginTop: 1 }, /* @__PURE__ */ React5.createElement(Text5, { color: "magentaBright" }, res.author))
-      );
-    },
+    component: RandomQuote,
     expectedTime: 0.8
   },
   "Get Random Anime to Watch": {
@@ -187,81 +297,7 @@ var COMMANDS_MAP = {
       error: "Request Failed",
       url: "https://api.jikan.moe/v4/random/anime"
     })),
-    resultParser: (res) => {
-      var _a, _b;
-      if (res.error) {
-        return /* @__PURE__ */ React5.createElement(Text5, { color: "red" }, "ERROR FETCHING ", res.url);
-      }
-      const timer = setTimeout(() => {
-        open(res.url);
-        COMMANDS_TIMERS.delete(timer);
-      }, 8e3);
-      COMMANDS_TIMERS.add(timer);
-      return /* @__PURE__ */ React5.createElement(
-        Box5,
-        {
-          flexDirection: "column",
-          gap: 1,
-          width: 80,
-          borderStyle: "round",
-          borderColor: "cyanBright",
-          padding: 1,
-          justifyContent: "flex-start"
-        },
-        /* @__PURE__ */ React5.createElement(Text5, { ...THEME.text.info }, "Anime page will open in 8 seconds"),
-        /* @__PURE__ */ React5.createElement(
-          Text5,
-          {
-            color: "yellowBright"
-          },
-          "Name: ",
-          (_a = res.titles) == null ? void 0 : _a.map((n, indx) => {
-            var _a2;
-            const repeatCount = 3;
-            if (indx == ((_a2 = res == null ? void 0 : res.titles) == null ? void 0 : _a2.length) - 1)
-              return n.title;
-            else
-              return n.title + " ".repeat(repeatCount) + "|" + " ".repeat(repeatCount);
-          })
-        ),
-        /* @__PURE__ */ React5.createElement(
-          Text5,
-          {
-            color: "magentaBright"
-          },
-          "Genres: ",
-          res.genres.map((nm) => " " + nm.name)
-        ),
-        /* @__PURE__ */ React5.createElement(
-          Text5,
-          {
-            color: "whiteBright"
-          },
-          "Score: ",
-          res.score,
-          " | Popularity: ",
-          res.popularity
-        ),
-        /* @__PURE__ */ React5.createElement(
-          Text5,
-          {
-            color: "green"
-          },
-          "Episodes: ",
-          res.episodes,
-          " | Status: ",
-          res.status
-        ),
-        /* @__PURE__ */ React5.createElement(
-          Text5,
-          {
-            color: "gray"
-          },
-          "Aired On: ",
-          (_b = res.aired) == null ? void 0 : _b.string
-        )
-      );
-    },
+    component: RandomAnime,
     expectedTime: 1.3
   },
   "IP Info": {
@@ -275,12 +311,8 @@ var COMMANDS_MAP = {
         url: `https://ipinfo.io/${inpts.ip}`
       }));
     },
-    resultParser: (res) => {
-      if (res.error) {
-        return /* @__PURE__ */ React5.createElement(Text5, { color: "red" }, JSON.stringify(res, null, 5));
-      }
-      return /* @__PURE__ */ React5.createElement(Text5, null, JSON.stringify(res, null, 5));
-    },
+    component: IPInfo,
+    expectedTime: 1,
     inputs: [
       { label: "IP [Empty for yours]", key: "ip" }
     ]
@@ -314,27 +346,33 @@ var COMMANDS_MAP = {
       ];
       return fetch(`https://asciified.thelicato.io/api/v2/ascii?text=${encodeURI(texts[Math.floor(Math.random() * texts.length)])}`).then((r) => r.text()).catch((e) => "REQUEST FAILED [https://asciified.thelicato.io/api/v2/ascii?text=bpn333]");
     },
+    component: FeelingLucky,
     expectedTime: 0.5
   },
   "Credit": {
     func: () => {
-      open("https://github.com/bpn333");
       return "Thank You!";
-    }
+    },
+    expectedTime: 0.5,
+    component: Credit
   }
 };
+
+// src/App.jsx
 function App_default() {
   const [command, setCommand] = useState5();
   const [commandInputs, setCommandInputs] = useState5(null);
   const [result, setResult] = useState5();
-  useInput3(
+  const refreshToken = useRef(0);
+  useInput4(
     (inpt, key) => {
-      if (inpt == "r" || inpt == "q" || key.escape) {
+      if (inpt == "q" || key.escape) {
         setCommand(null);
         setCommandInputs(null);
         setResult("");
-        for (const timr of COMMANDS_TIMERS) clearTimeout(timr);
-        COMMANDS_TIMERS.clear();
+      } else if (inpt == "r") {
+        setResult("");
+        refreshToken.current += 1;
       }
     },
     {
@@ -342,23 +380,21 @@ function App_default() {
     }
   );
   if (!process.stdout.isTTY) {
-    console.log("Open this URL:", url);
+    console.log("SORRY CANT RUN HERE");
     return;
   }
-  return /* @__PURE__ */ React5.createElement(React5.Fragment, null, /* @__PURE__ */ React5.createElement(Box5, { marginY: 2, ...THEME.box.heading }, /* @__PURE__ */ React5.createElement(Text5, { ...THEME.text.title }, "RANDOM STUFF TO TRY")), command ? COMMANDS_MAP[command].inputs && !commandInputs ? /* @__PURE__ */ React5.createElement(FillInput, { inputs: COMMANDS_MAP[command].inputs, onFill: (dta) => setCommandInputs(dta) }) : /* @__PURE__ */ React5.createElement(
+  return /* @__PURE__ */ React10.createElement(React10.Fragment, null, /* @__PURE__ */ React10.createElement(Box7, { marginTop: 2, marginBottom: 1, marginLeft: 2, ...THEME.box.heading }, /* @__PURE__ */ React10.createElement(Text10, { ...THEME.text.title }, "api-showcase")), command ? COMMANDS_MAP_default[command].inputs && !commandInputs ? /* @__PURE__ */ React10.createElement(FillInput, { inputs: COMMANDS_MAP_default[command].inputs, onFill: (dta) => setCommandInputs(dta) }) : /* @__PURE__ */ React10.createElement(
     Loader,
     {
-      func: commandInputs ? async () => COMMANDS_MAP[command].func(commandInputs) : COMMANDS_MAP[command].func,
-      expectedTime: COMMANDS_MAP[command].expectedTime,
+      func: commandInputs ? async () => COMMANDS_MAP_default[command].func(commandInputs) : COMMANDS_MAP_default[command].func,
+      expectedTime: COMMANDS_MAP_default[command].expectedTime,
       onRes: (d) => {
-        if (COMMANDS_MAP[command].resultParser)
-          setResult(COMMANDS_MAP[command].resultParser(d));
-        else
-          setResult(/* @__PURE__ */ React5.createElement(Text5, null, d));
-      }
+        setResult(React10.createElement(COMMANDS_MAP_default[command].component, { result: d }));
+      },
+      key: refreshToken.current
     }
-  ) : /* @__PURE__ */ React5.createElement(SelectInput_default, { options: Object.keys(COMMANDS_MAP), onSelect: (d) => setCommand(d) }), result && /* @__PURE__ */ React5.createElement(React5.Fragment, null, /* @__PURE__ */ React5.createElement(Box5, null, result), /* @__PURE__ */ React5.createElement(Box5, { marginY: 1 }, /* @__PURE__ */ React5.createElement(Text5, { ...THEME.text.info }, "press [r|q|esc] to reset"))));
+  ) : /* @__PURE__ */ React10.createElement(SelectInput_default, { options: Object.keys(COMMANDS_MAP_default), onSelect: (d) => setCommand(d) }), result && /* @__PURE__ */ React10.createElement(React10.Fragment, null, /* @__PURE__ */ React10.createElement(Box7, null, result), /* @__PURE__ */ React10.createElement(Box7, { marginY: 1 }, /* @__PURE__ */ React10.createElement(Text10, { ...THEME.text.info }, "[q|esc] to quit -:|:- [r] to redo"))));
 }
 
 // main.jsx
-render(/* @__PURE__ */ React6.createElement(App_default, null));
+render(/* @__PURE__ */ React11.createElement(App_default, null));

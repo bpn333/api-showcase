@@ -16,7 +16,7 @@ export default function ({ options, onSelect }) {
         <Box flexDirection="column">
             {options.map((opt, i) => (
                 <Text key={opt} color={i === index ? "green" : "gray"}>
-                    {i === index ? "▶ " : "  "}
+                    {i === index ? "▶  " : "   "}
                     {opt}
                 </Text>
             ))}

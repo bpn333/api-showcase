@@ -3,7 +3,7 @@ const THEME = {
         heading: {
             borderStyle: "round",
             borderColor: "greenBright",
-            paddingX: 1,
+            paddingX: 3,
             alignSelf: "flex-start"
         }
     },

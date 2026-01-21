@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Box, Text, useInput } from "ink";
 import { THEME } from "../config";
 import FakeProgress from "./components/FakeProgress";
@@ -17,7 +17,7 @@ export default function () {
             setCommand(null);
             setCommandInputs(null);
             setResult('');
-        } else if (inpt == "r") {
+        } else if (inpt == " ") {
             setResult('')
             refreshToken.current += 1;
         }
@@ -35,7 +35,7 @@ export default function () {
     return (
         <>
             <Box marginTop={2} marginBottom={1} marginLeft={2} {...THEME.box.heading}>
-                <Text {...THEME.text.title}>api-showcase</Text>
+                <CoolTitle />
             </Box>
             {
                 command ?
@@ -64,10 +64,40 @@ export default function () {
                     <Box>
                         {result}
                     </Box>
-                    <Box marginY={1}>
-                        <Text {...THEME.text.info}>[q|esc] to quit -:|:- [r] to redo</Text>
+                    <Box marginY={1} marginLeft={1}>
+                        <Text {...THEME.text.info}>[q|esc] to quit -:|:- [SPACE] to redo</Text>
                     </Box>
                 </>
+            }
+        </>
+    )
+}
+
+const CoolTitle = () => {
+    const [title, setTitle] = useState("api-showcase".split(''));
+    const indexToEdit = useRef(0);
+
+    useEffect(() => {
+        const intr = setInterval(() => {
+            setTitle(p => {
+                const newTitle = [...p];
+                newTitle[indexToEdit.current] =
+                    /[A-Z]/.test(newTitle[indexToEdit.current]) ?
+                        newTitle[indexToEdit.current].toLowerCase() :
+                        newTitle[indexToEdit.current].toUpperCase();
+                indexToEdit.current = Math.floor(Math.random() * title.length);
+                return newTitle;
+            })
+        }, 333)
+        return () => clearInterval(intr)
+    }, [])
+
+    return (
+        <>
+            {
+                title.map(c => (
+                    <Text color={/[A-Z]/.test(c) ? "yellowBright" : "whiteBright"}>{c}</Text>
+                ))
             }
         </>
     )

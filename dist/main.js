@@ -280,7 +280,7 @@ var COMMANDS_MAP_default = {
   },
   "Get Random Anime to Watch": {
     func: () => fetch("https://api.jikan.moe/v4/random/anime").then((r) => r.json()).then((d) => {
-      if (!d.data) throw Error();
+      if (!d.data) throw Error("NO DATA FOUND");
       const dataa = d.data;
       const dta = {
         url: dataa.url,
@@ -295,6 +295,7 @@ var COMMANDS_MAP_default = {
       return dta;
     }).catch((e) => ({
       error: "Request Failed",
+      message: e.message,
       url: "https://api.jikan.moe/v4/random/anime"
     })),
     component: RandomAnime,

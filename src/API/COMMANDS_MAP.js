@@ -3,6 +3,7 @@ import RandomAnime from "./RandomAnime";
 import IPInfo from "./IPInfo";
 import FeelingLucky from "./FeelingLucky";
 import Credit from "./Credit";
+import AnimeSearch from "./AnimeSearch";
 
 export default {
     "Get Random Quote": {
@@ -16,7 +17,7 @@ export default {
     },
     "Get Random Anime to Watch": {
         func: () => fetch("https://api.jikan.moe/v4/random/anime").then(r => r.json()).then(d => {
-            if (!d.data) throw Error();
+            if (!d.data) throw Error(d?.message ?? "Unknown Error");
             const dataa = d.data;
             const dta = {
                 url: dataa.url,
@@ -32,10 +33,28 @@ export default {
         })
             .catch(e => ({
                 error: "Request Failed",
+                message: e.message,
                 url: "https://api.jikan.moe/v4/random/anime",
             })),
         component: RandomAnime,
         expectedTime: 1.3
+    },
+    "Anime Search": {
+        func: ({ query, limit = 5 }) => fetch(`https://api.jikan.moe/v4/anime?q=${encodeURI(query)}&limit=${limit}`).then(r => r.json()).then(d => {
+            if (!d.data) throw Error(d?.message ?? "Unknown Error");
+            return d.data;
+        })
+            .catch(e => ({
+                error: "Request Failed",
+                message: e.message,
+                url: `https://api.jikan.moe/v4/anime?q=${encodeURI(query)}&limit=${limit}`,
+            })),
+        component: AnimeSearch,
+        inputs: [
+            { label: "Search Query", key: "query" },
+            { label: "How Much? [Max Limit]", key: "limit", type: "select", options: [5, 10, 15, 25] }
+        ],
+        expectedTime: 2
     },
     "IP Info": {
         func: async (inpts) => {
@@ -83,7 +102,7 @@ export default {
             ]
             return fetch(`https://asciified.thelicato.io/api/v2/ascii?text=${encodeURI(texts[Math.floor(Math.random() * texts.length)])}`)
                 .then(r => r.text())
-                .catch(e => "REQUEST FAILED [https://asciified.thelicato.io/api/v2/ascii?text=bpn333]")
+                .catch(e => `REQUEST FAILED [https://asciified.thelicato.io/api/v2/ascii?text=${encodeURI(texts[Math.floor(Math.random() * texts.length)])}]`)
         },
         component: FeelingLucky,
         expectedTime: 0.5

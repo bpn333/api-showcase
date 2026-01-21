@@ -6,7 +6,7 @@ export default function Loader({
     expectedTime = 4,
     onRes
 }) {
-    const total = 50;
+    const total = 70;
     const [progress, setProgress] = useState(0);
 
     useEffect(() => {
@@ -23,9 +23,9 @@ export default function Loader({
 
         const timer = setInterval(() => {
             setProgress(p => {
-                if (p >= total - 1) {
+                if (p >= total - 3) {
                     clearInterval(timer);
-                    return total;
+                    return p;
                 }
                 return p + 1;
             });
@@ -40,8 +40,10 @@ export default function Loader({
 
     const percent = Math.round((progress / total) * 100);
 
+    if (progress == total) return;
+
     return (
-        <Box marginY={1}>
+        <Box marginY={1} marginLeft={1}>
             <Text color={total * 0.8 < progress ? "green" : total * 0.3 < progress ? "yellow" : "red"}>{bar}</Text>
             <Text color="gray"> {percent}%</Text>
         </Box>

@@ -1,14 +1,19 @@
 import open from "open";
-import React from "react";
+import React, { useState } from "react";
 import { Box, Text, useInput } from "ink";
 import { THEME } from "../../config";
 
-export default function RandomAnime({ result }) {
+export default function AnimeSearch({ result }) {
+    const [currentIndex, setCurrentIndex] = useState(0);
 
     useInput((inpt, key) => {
-        if (inpt == "o")
-            open(result.url);
-    }, { isActive: !result.error })
+        if (key.rightArrow)
+            setCurrentIndex(p => (p + 1) % result.length);
+        else if (key.leftArrow)
+            setCurrentIndex(p => p == 0 ? result.length - 1 : p - 1);
+        else if (inpt == "o")
+            open(result[currentIndex].url)
+    })
 
     if (result.error) {
         return <Text color={"red"}>{JSON.stringify(result, null, 5)}</Text>
@@ -24,11 +29,11 @@ export default function RandomAnime({ result }) {
             justifyContent="flex-start"
         >
             <Box justifyContent="center">
-                <Text {...THEME.text.info}>Press 'o' to open anime page</Text>
+                <Text {...THEME.text.info}>'o': open anime page  | {'<'}- {currentIndex + 1}/{result.length} -{'>'}</Text>
             </Box>
 
             <Box justifyContent="center" flexWrap="wrap">
-                {result.titles?.map((n, indx) => (
+                {result[currentIndex].titles?.map((n, indx) => (
                     <Text color={indx == 0 ? "yellowBright" : "whiteBright"} key={indx}> {indx == 0 ? n.title : "[" + n.title + "]"} </Text>
                 ))}
             </Box>
@@ -36,26 +41,26 @@ export default function RandomAnime({ result }) {
             <Text
                 color={"magentaBright"}
             >
-                Genres: {result.genres.map(nm => " " + nm.name)}
+                Genres: {result[currentIndex].genres.map(nm => " " + nm.name)}
             </Text>
 
             <Text
                 color={"whiteBright"}
             >
-                Score: {result.score} | Popularity: {result.popularity}
+                Score: {result[currentIndex].score} | Popularity: {result[currentIndex].popularity}
             </Text>
 
             <Box justifyContent="space-between" flexWrap="wrap">
                 <Text
                     color={"green"}
                 >
-                    Episodes: {result.episodes} | Status: {result.status}
+                    Episodes: {result[currentIndex].episodes} | Status: {result[currentIndex].status}
                 </Text>
 
                 <Text
                     color={"gray"}
                 >
-                    Aired On: {result.aired?.string}
+                    Aired On: {result[currentIndex].aired?.string}
                 </Text>
             </Box>
         </Box>

@@ -95,8 +95,8 @@ const CoolTitle = () => {
     return (
         <>
             {
-                title.map(c => (
-                    <Text color={/[A-Z]/.test(c) ? "yellowBright" : "whiteBright"}>{c}</Text>
+                title.map((c, indx) => (
+                    <Text key={indx} color={/[A-Z]/.test(c) ? "yellowBright" : "whiteBright"}>{c}</Text>
                 ))
             }
         </>

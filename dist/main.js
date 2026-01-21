@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 // main.jsx
-import React11 from "react";
+import React12 from "react";
 import { render } from "ink";
 
 // src/App.jsx
-import React10, { useRef, useState as useState5 } from "react";
-import { Box as Box7, Text as Text10, useInput as useInput4 } from "ink";
+import React11, { useEffect as useEffect3, useRef, useState as useState6 } from "react";
+import { Box as Box8, Text as Text11, useInput as useInput5 } from "ink";
 
 // config.js
 var THEME = {
@@ -14,7 +14,7 @@ var THEME = {
     heading: {
       borderStyle: "round",
       borderColor: "greenBright",
-      paddingX: 1,
+      paddingX: 3,
       alignSelf: "flex-start"
     }
   },
@@ -36,7 +36,7 @@ function Loader({
   expectedTime = 4,
   onRes
 }) {
-  const total = 50;
+  const total = 70;
   const [progress, setProgress] = useState(0);
   useEffect(() => {
     const fetchData = async () => {
@@ -50,9 +50,9 @@ function Loader({
     const intervalMs = expectedTime * 1e3 / total;
     const timer = setInterval(() => {
       setProgress((p) => {
-        if (p >= total - 1) {
+        if (p >= total - 3) {
           clearInterval(timer);
-          return total;
+          return p;
         }
         return p + 1;
       });
@@ -61,7 +61,8 @@ function Loader({
   }, [expectedTime]);
   const bar = "\u2588".repeat(progress) + "\u2591".repeat(total - progress);
   const percent = Math.round(progress / total * 100);
-  return /* @__PURE__ */ React.createElement(Box, { marginY: 1 }, /* @__PURE__ */ React.createElement(Text, { color: total * 0.8 < progress ? "green" : total * 0.3 < progress ? "yellow" : "red" }, bar), /* @__PURE__ */ React.createElement(Text, { color: "gray" }, " ", percent, "%"));
+  if (progress == total) return;
+  return /* @__PURE__ */ React.createElement(Box, { marginY: 1, marginLeft: 1 }, /* @__PURE__ */ React.createElement(Text, { color: total * 0.8 < progress ? "green" : total * 0.3 < progress ? "yellow" : "red" }, bar), /* @__PURE__ */ React.createElement(Text, { color: "gray" }, " ", percent, "%"));
 }
 
 // src/components/SelectInput.jsx
@@ -172,7 +173,7 @@ function RandomAnime({ result }) {
       open(result.url);
   }, { isActive: !result.error });
   if (result.error) {
-    return /* @__PURE__ */ React6.createElement(Text6, { color: "red" }, "ERROR FETCHING ", result.url);
+    return /* @__PURE__ */ React6.createElement(Text6, { color: "red" }, JSON.stringify(result, null, 5));
   }
   return /* @__PURE__ */ React6.createElement(
     Box6,
@@ -185,22 +186,8 @@ function RandomAnime({ result }) {
       padding: 1,
       justifyContent: "flex-start"
     },
-    /* @__PURE__ */ React6.createElement(Text6, { ...THEME.text.info }, "Press 'o' to open anime page"),
-    /* @__PURE__ */ React6.createElement(
-      Text6,
-      {
-        color: "yellowBright"
-      },
-      "Name: ",
-      (_a = result.titles) == null ? void 0 : _a.map((n, indx) => {
-        var _a2;
-        const repeatCount = 3;
-        if (indx == ((_a2 = result == null ? void 0 : result.titles) == null ? void 0 : _a2.length) - 1)
-          return n.title;
-        else
-          return n.title + " ".repeat(repeatCount) + "|" + " ".repeat(repeatCount);
-      })
-    ),
+    /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "center" }, /* @__PURE__ */ React6.createElement(Text6, { ...THEME.text.info }, "Press 'o' to open anime page")),
+    /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "center", flexWrap: "wrap" }, (_a = result.titles) == null ? void 0 : _a.map((n, indx) => /* @__PURE__ */ React6.createElement(Text6, { color: indx == 0 ? "yellowBright" : "whiteBright", key: indx }, " ", indx == 0 ? n.title : "[" + n.title + "]", " "))),
     /* @__PURE__ */ React6.createElement(
       Text6,
       {
@@ -219,7 +206,7 @@ function RandomAnime({ result }) {
       " | Popularity: ",
       result.popularity
     ),
-    /* @__PURE__ */ React6.createElement(
+    /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "space-between", flexWrap: "wrap" }, /* @__PURE__ */ React6.createElement(
       Text6,
       {
         color: "green"
@@ -228,15 +215,14 @@ function RandomAnime({ result }) {
       result.episodes,
       " | Status: ",
       result.status
-    ),
-    /* @__PURE__ */ React6.createElement(
+    ), /* @__PURE__ */ React6.createElement(
       Text6,
       {
         color: "gray"
       },
       "Aired On: ",
       (_b = result.aired) == null ? void 0 : _b.string
-    )
+    ))
   );
 }
 
@@ -268,6 +254,75 @@ function Credit({ result }) {
   return /* @__PURE__ */ React9.createElement(Text9, null, result);
 }
 
+// src/API/AnimeSearch.jsx
+import open3 from "open";
+import React10, { useState as useState5 } from "react";
+import { Box as Box7, Text as Text10, useInput as useInput4 } from "ink";
+function AnimeSearch({ result }) {
+  var _a, _b;
+  const [currentIndex, setCurrentIndex] = useState5(0);
+  useInput4((inpt, key) => {
+    if (key.rightArrow)
+      setCurrentIndex((p) => (p + 1) % result.length);
+    else if (key.leftArrow)
+      setCurrentIndex((p) => p == 0 ? result.length - 1 : p - 1);
+    else if (inpt == "o")
+      open3(result[currentIndex].url);
+  });
+  if (result.error) {
+    return /* @__PURE__ */ React10.createElement(Text10, { color: "red" }, JSON.stringify(result, null, 5));
+  }
+  return /* @__PURE__ */ React10.createElement(
+    Box7,
+    {
+      flexDirection: "column",
+      gap: 1,
+      width: 80,
+      borderStyle: "round",
+      borderColor: "cyanBright",
+      padding: 1,
+      justifyContent: "flex-start"
+    },
+    /* @__PURE__ */ React10.createElement(Box7, { justifyContent: "center" }, /* @__PURE__ */ React10.createElement(Text10, { ...THEME.text.info }, "'o': open anime page  | ", "<", "- ", currentIndex + 1, "/", result.length, " -", ">")),
+    /* @__PURE__ */ React10.createElement(Box7, { justifyContent: "center", flexWrap: "wrap" }, (_a = result[currentIndex].titles) == null ? void 0 : _a.map((n, indx) => /* @__PURE__ */ React10.createElement(Text10, { color: indx == 0 ? "yellowBright" : "whiteBright", key: indx }, " ", indx == 0 ? n.title : "[" + n.title + "]", " "))),
+    /* @__PURE__ */ React10.createElement(
+      Text10,
+      {
+        color: "magentaBright"
+      },
+      "Genres: ",
+      result[currentIndex].genres.map((nm) => " " + nm.name)
+    ),
+    /* @__PURE__ */ React10.createElement(
+      Text10,
+      {
+        color: "whiteBright"
+      },
+      "Score: ",
+      result[currentIndex].score,
+      " | Popularity: ",
+      result[currentIndex].popularity
+    ),
+    /* @__PURE__ */ React10.createElement(Box7, { justifyContent: "space-between", flexWrap: "wrap" }, /* @__PURE__ */ React10.createElement(
+      Text10,
+      {
+        color: "green"
+      },
+      "Episodes: ",
+      result[currentIndex].episodes,
+      " | Status: ",
+      result[currentIndex].status
+    ), /* @__PURE__ */ React10.createElement(
+      Text10,
+      {
+        color: "gray"
+      },
+      "Aired On: ",
+      (_b = result[currentIndex].aired) == null ? void 0 : _b.string
+    ))
+  );
+}
+
 // src/API/COMMANDS_MAP.js
 var COMMANDS_MAP_default = {
   "Get Random Quote": {
@@ -280,7 +335,7 @@ var COMMANDS_MAP_default = {
   },
   "Get Random Anime to Watch": {
     func: () => fetch("https://api.jikan.moe/v4/random/anime").then((r) => r.json()).then((d) => {
-      if (!d.data) throw Error("NO DATA FOUND");
+      if (!d.data) throw Error((d == null ? void 0 : d.message) ?? "Unknown Error");
       const dataa = d.data;
       const dta = {
         url: dataa.url,
@@ -300,6 +355,22 @@ var COMMANDS_MAP_default = {
     })),
     component: RandomAnime,
     expectedTime: 1.3
+  },
+  "Anime Search": {
+    func: ({ query, limit = 5 }) => fetch(`https://api.jikan.moe/v4/anime?q=${encodeURI(query)}&limit=${limit}`).then((r) => r.json()).then((d) => {
+      if (!d.data) throw Error((d == null ? void 0 : d.message) ?? "Unknown Error");
+      return d.data;
+    }).catch((e) => ({
+      error: "Request Failed",
+      message: e.message,
+      url: `https://api.jikan.moe/v4/anime?q=${encodeURI(query)}&limit=${limit}`
+    })),
+    component: AnimeSearch,
+    inputs: [
+      { label: "Search Query", key: "query" },
+      { label: "How Much? [Max Limit]", key: "limit", type: "select", options: [5, 10, 15, 25] }
+    ],
+    expectedTime: 2
   },
   "IP Info": {
     func: async (inpts) => {
@@ -345,7 +416,7 @@ var COMMANDS_MAP_default = {
         "Click Fate",
         "Random Joy"
       ];
-      return fetch(`https://asciified.thelicato.io/api/v2/ascii?text=${encodeURI(texts[Math.floor(Math.random() * texts.length)])}`).then((r) => r.text()).catch((e) => "REQUEST FAILED [https://asciified.thelicato.io/api/v2/ascii?text=bpn333]");
+      return fetch(`https://asciified.thelicato.io/api/v2/ascii?text=${encodeURI(texts[Math.floor(Math.random() * texts.length)])}`).then((r) => r.text()).catch((e) => `REQUEST FAILED [https://asciified.thelicato.io/api/v2/ascii?text=${encodeURI(texts[Math.floor(Math.random() * texts.length)])}]`);
     },
     component: FeelingLucky,
     expectedTime: 0.5
@@ -361,17 +432,17 @@ var COMMANDS_MAP_default = {
 
 // src/App.jsx
 function App_default() {
-  const [command, setCommand] = useState5();
-  const [commandInputs, setCommandInputs] = useState5(null);
-  const [result, setResult] = useState5();
+  const [command, setCommand] = useState6();
+  const [commandInputs, setCommandInputs] = useState6(null);
+  const [result, setResult] = useState6();
   const refreshToken = useRef(0);
-  useInput4(
+  useInput5(
     (inpt, key) => {
       if (inpt == "q" || key.escape) {
         setCommand(null);
         setCommandInputs(null);
         setResult("");
-      } else if (inpt == "r") {
+      } else if (inpt == " ") {
         setResult("");
         refreshToken.current += 1;
       }
@@ -384,18 +455,34 @@ function App_default() {
     console.log("SORRY CANT RUN HERE");
     return;
   }
-  return /* @__PURE__ */ React10.createElement(React10.Fragment, null, /* @__PURE__ */ React10.createElement(Box7, { marginTop: 2, marginBottom: 1, marginLeft: 2, ...THEME.box.heading }, /* @__PURE__ */ React10.createElement(Text10, { ...THEME.text.title }, "api-showcase")), command ? COMMANDS_MAP_default[command].inputs && !commandInputs ? /* @__PURE__ */ React10.createElement(FillInput, { inputs: COMMANDS_MAP_default[command].inputs, onFill: (dta) => setCommandInputs(dta) }) : /* @__PURE__ */ React10.createElement(
+  return /* @__PURE__ */ React11.createElement(React11.Fragment, null, /* @__PURE__ */ React11.createElement(Box8, { marginTop: 2, marginBottom: 1, marginLeft: 2, ...THEME.box.heading }, /* @__PURE__ */ React11.createElement(CoolTitle, null)), command ? COMMANDS_MAP_default[command].inputs && !commandInputs ? /* @__PURE__ */ React11.createElement(FillInput, { inputs: COMMANDS_MAP_default[command].inputs, onFill: (dta) => setCommandInputs(dta) }) : /* @__PURE__ */ React11.createElement(
     Loader,
     {
       func: commandInputs ? async () => COMMANDS_MAP_default[command].func(commandInputs) : COMMANDS_MAP_default[command].func,
       expectedTime: COMMANDS_MAP_default[command].expectedTime,
       onRes: (d) => {
-        setResult(React10.createElement(COMMANDS_MAP_default[command].component, { result: d }));
+        setResult(React11.createElement(COMMANDS_MAP_default[command].component, { result: d }));
       },
       key: refreshToken.current
     }
-  ) : /* @__PURE__ */ React10.createElement(SelectInput_default, { options: Object.keys(COMMANDS_MAP_default), onSelect: (d) => setCommand(d) }), result && /* @__PURE__ */ React10.createElement(React10.Fragment, null, /* @__PURE__ */ React10.createElement(Box7, null, result), /* @__PURE__ */ React10.createElement(Box7, { marginY: 1 }, /* @__PURE__ */ React10.createElement(Text10, { ...THEME.text.info }, "[q|esc] to quit -:|:- [r] to redo"))));
+  ) : /* @__PURE__ */ React11.createElement(SelectInput_default, { options: Object.keys(COMMANDS_MAP_default), onSelect: (d) => setCommand(d) }), result && /* @__PURE__ */ React11.createElement(React11.Fragment, null, /* @__PURE__ */ React11.createElement(Box8, null, result), /* @__PURE__ */ React11.createElement(Box8, { marginY: 1, marginLeft: 1 }, /* @__PURE__ */ React11.createElement(Text11, { ...THEME.text.info }, "[q|esc] to quit -:|:- [SPACE] to redo"))));
 }
+var CoolTitle = () => {
+  const [title, setTitle] = useState6("api-showcase".split(""));
+  const indexToEdit = useRef(0);
+  useEffect3(() => {
+    const intr = setInterval(() => {
+      setTitle((p) => {
+        const newTitle = [...p];
+        newTitle[indexToEdit.current] = /[A-Z]/.test(newTitle[indexToEdit.current]) ? newTitle[indexToEdit.current].toLowerCase() : newTitle[indexToEdit.current].toUpperCase();
+        indexToEdit.current = Math.floor(Math.random() * title.length);
+        return newTitle;
+      });
+    }, 333);
+    return () => clearInterval(intr);
+  }, []);
+  return /* @__PURE__ */ React11.createElement(React11.Fragment, null, title.map((c, indx) => /* @__PURE__ */ React11.createElement(Text11, { key: indx, color: /[A-Z]/.test(c) ? "yellowBright" : "whiteBright" }, c)));
+};
 
 // main.jsx
-render(/* @__PURE__ */ React11.createElement(App_default, null));
+render(/* @__PURE__ */ React12.createElement(App_default, null));

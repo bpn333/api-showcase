@@ -1,9 +1,59 @@
 import open from "open";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Text, useInput } from "ink";
 import { THEME } from "../../config";
+import Chafa from "chafa-wasm";
+
+const chafa = await Chafa();
 
 export default function RandomAnime({ result }) {
+    const [imgOut, setImgOut] = useState();
+
+    const imgUrl = result?.images?.jpg?.image_url;
+    useEffect(() => {
+        if (!imgUrl) return;
+
+        let cancelled = false;
+
+        (async () => {
+            try {
+                const res = await fetch(imgUrl);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const arrayBuffer = await res.arrayBuffer();
+
+                const decodedImage = await new Promise((resolve, reject) => {
+                    chafa.decodeImage(arrayBuffer, (err, result) => {
+                        if (err) reject(err);
+                        else resolve(result);
+                    });
+                });
+                const result = await new Promise((resolve, reject) => {
+                    chafa.imageToAnsi(
+                        decodedImage,
+                        {
+                            height: 15,
+                            symbols: "braille",
+                            colors: chafa.ChafaCanvasMode.CHAFA_CANVAS_MODE_TRUECOLOR.value
+                        },
+                        (err, out) => {
+                            if (err) reject(err);
+                            else resolve(out);
+                        }
+                    );
+                });
+
+                if (!cancelled) {
+                    setImgOut(result.ansi);
+                }
+            } catch (e) {
+                if (!cancelled) {
+                    setImgOut("Failed to render image: " + (e.message || e));
+                }
+            }
+        })();
+
+        return () => { cancelled = true; };
+    }, [imgUrl]);
 
     useInput((inpt, key) => {
         if (inpt == "o")
@@ -31,6 +81,12 @@ export default function RandomAnime({ result }) {
                 {result.titles?.map((n, indx) => (
                     <Text color={indx == 0 ? "yellowBright" : "whiteBright"} key={indx}> {indx == 0 ? n.title : "[" + n.title + "]"} </Text>
                 ))}
+            </Box>
+
+            <Box justifyContent="center">
+                <Text>
+                    {imgOut}
+                </Text>
             </Box>
 
             <Text

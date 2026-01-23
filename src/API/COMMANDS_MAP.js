@@ -18,18 +18,7 @@ export default {
     "Get Random Anime to Watch": {
         func: () => fetch("https://api.jikan.moe/v4/random/anime").then(r => r.json()).then(d => {
             if (!d.data) throw Error(d?.message ?? "Unknown Error");
-            const dataa = d.data;
-            const dta = {
-                url: dataa.url,
-                titles: dataa.titles,
-                genres: dataa.genres,
-                status: dataa.status,
-                episodes: dataa.episodes,
-                aired: dataa.aired,
-                score: dataa.score,
-                popularity: dataa.popularity
-            }
-            return dta;
+            return d.data;
         })
             .catch(e => ({
                 error: "Request Failed",

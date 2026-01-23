@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import { Box, Text, useInput } from "ink";
 import { THEME } from "../config";
 import FakeProgress from "./components/FakeProgress";
@@ -35,7 +35,7 @@ export default function () {
     return (
         <>
             <Box marginTop={2} marginBottom={1} marginLeft={2} {...THEME.box.heading}>
-                <CoolTitle />
+                <CoolTitle isPaused={!!result} />
             </Box>
             {
                 command ?
@@ -73,11 +73,12 @@ export default function () {
     )
 }
 
-const CoolTitle = () => {
+const CoolTitle = memo(({ isPaused = false }) => {
     const [title, setTitle] = useState("api-showcase".split(''));
     const indexToEdit = useRef(0);
 
     useEffect(() => {
+        if (isPaused) return;
         const intr = setInterval(() => {
             setTitle(p => {
                 const newTitle = [...p];
@@ -90,7 +91,7 @@ const CoolTitle = () => {
             })
         }, 333)
         return () => clearInterval(intr)
-    }, [])
+    }, [isPaused])
 
     return (
         <>
@@ -101,4 +102,4 @@ const CoolTitle = () => {
             }
         </>
     )
-}
+})

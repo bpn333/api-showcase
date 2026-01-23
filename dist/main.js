@@ -5,7 +5,7 @@ import React12 from "react";
 import { render } from "ink";
 
 // src/App.jsx
-import React11, { useEffect as useEffect3, useRef, useState as useState6 } from "react";
+import React11, { memo, useEffect as useEffect4, useRef, useState as useState7 } from "react";
 import { Box as Box8, Text as Text11, useInput as useInput5 } from "ink";
 
 // config.js
@@ -164,10 +164,55 @@ function RandomQuote({ result }) {
 
 // src/API/RandomAnime.jsx
 import open from "open";
-import React6 from "react";
+import React6, { useEffect as useEffect2, useState as useState5 } from "react";
 import { Box as Box6, Text as Text6, useInput as useInput3 } from "ink";
+import Chafa from "chafa-wasm";
+var chafa = await Chafa();
 function RandomAnime({ result }) {
-  var _a, _b;
+  var _a, _b, _c, _d;
+  const [imgOut, setImgOut] = useState5();
+  const imgUrl = (_b = (_a = result == null ? void 0 : result.images) == null ? void 0 : _a.jpg) == null ? void 0 : _b.image_url;
+  useEffect2(() => {
+    if (!imgUrl) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(imgUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const arrayBuffer = await res.arrayBuffer();
+        const decodedImage = await new Promise((resolve, reject) => {
+          chafa.decodeImage(arrayBuffer, (err, result3) => {
+            if (err) reject(err);
+            else resolve(result3);
+          });
+        });
+        const result2 = await new Promise((resolve, reject) => {
+          chafa.imageToAnsi(
+            decodedImage,
+            {
+              height: 15,
+              symbols: "braille",
+              colors: chafa.ChafaCanvasMode.CHAFA_CANVAS_MODE_TRUECOLOR.value
+            },
+            (err, out) => {
+              if (err) reject(err);
+              else resolve(out);
+            }
+          );
+        });
+        if (!cancelled) {
+          setImgOut(result2.ansi);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setImgOut("Failed to render image: " + (e.message || e));
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [imgUrl]);
   useInput3((inpt, key) => {
     if (inpt == "o")
       open(result.url);
@@ -187,7 +232,8 @@ function RandomAnime({ result }) {
       justifyContent: "flex-start"
     },
     /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "center" }, /* @__PURE__ */ React6.createElement(Text6, { ...THEME.text.info }, "Press 'o' to open anime page")),
-    /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "center", flexWrap: "wrap" }, (_a = result.titles) == null ? void 0 : _a.map((n, indx) => /* @__PURE__ */ React6.createElement(Text6, { color: indx == 0 ? "yellowBright" : "whiteBright", key: indx }, " ", indx == 0 ? n.title : "[" + n.title + "]", " "))),
+    /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "center", flexWrap: "wrap" }, (_c = result.titles) == null ? void 0 : _c.map((n, indx) => /* @__PURE__ */ React6.createElement(Text6, { color: indx == 0 ? "yellowBright" : "whiteBright", key: indx }, " ", indx == 0 ? n.title : "[" + n.title + "]", " "))),
+    /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "center" }, /* @__PURE__ */ React6.createElement(Text6, null, imgOut)),
     /* @__PURE__ */ React6.createElement(
       Text6,
       {
@@ -221,7 +267,7 @@ function RandomAnime({ result }) {
         color: "gray"
       },
       "Aired On: ",
-      (_b = result.aired) == null ? void 0 : _b.string
+      (_d = result.aired) == null ? void 0 : _d.string
     ))
   );
 }
@@ -245,10 +291,10 @@ function FeelingLucky({ result }) {
 
 // src/API/Credit.jsx
 import open2 from "open";
-import React9, { useEffect as useEffect2 } from "react";
+import React9, { useEffect as useEffect3 } from "react";
 import { Text as Text9 } from "ink";
 function Credit({ result }) {
-  useEffect2(() => {
+  useEffect3(() => {
     open2("https://github.com/bpn333");
   }, []);
   return /* @__PURE__ */ React9.createElement(Text9, null, result);
@@ -256,11 +302,11 @@ function Credit({ result }) {
 
 // src/API/AnimeSearch.jsx
 import open3 from "open";
-import React10, { useState as useState5 } from "react";
+import React10, { useState as useState6 } from "react";
 import { Box as Box7, Text as Text10, useInput as useInput4 } from "ink";
 function AnimeSearch({ result }) {
   var _a, _b;
-  const [currentIndex, setCurrentIndex] = useState5(0);
+  const [currentIndex, setCurrentIndex] = useState6(0);
   useInput4((inpt, key) => {
     if (key.rightArrow)
       setCurrentIndex((p) => (p + 1) % result.length);
@@ -336,18 +382,7 @@ var COMMANDS_MAP_default = {
   "Get Random Anime to Watch": {
     func: () => fetch("https://api.jikan.moe/v4/random/anime").then((r) => r.json()).then((d) => {
       if (!d.data) throw Error((d == null ? void 0 : d.message) ?? "Unknown Error");
-      const dataa = d.data;
-      const dta = {
-        url: dataa.url,
-        titles: dataa.titles,
-        genres: dataa.genres,
-        status: dataa.status,
-        episodes: dataa.episodes,
-        aired: dataa.aired,
-        score: dataa.score,
-        popularity: dataa.popularity
-      };
-      return dta;
+      return d.data;
     }).catch((e) => ({
       error: "Request Failed",
       message: e.message,
@@ -432,9 +467,9 @@ var COMMANDS_MAP_default = {
 
 // src/App.jsx
 function App_default() {
-  const [command, setCommand] = useState6();
-  const [commandInputs, setCommandInputs] = useState6(null);
-  const [result, setResult] = useState6();
+  const [command, setCommand] = useState7();
+  const [commandInputs, setCommandInputs] = useState7(null);
+  const [result, setResult] = useState7();
   const refreshToken = useRef(0);
   useInput5(
     (inpt, key) => {
@@ -455,7 +490,7 @@ function App_default() {
     console.log("SORRY CANT RUN HERE");
     return;
   }
-  return /* @__PURE__ */ React11.createElement(React11.Fragment, null, /* @__PURE__ */ React11.createElement(Box8, { marginTop: 2, marginBottom: 1, marginLeft: 2, ...THEME.box.heading }, /* @__PURE__ */ React11.createElement(CoolTitle, null)), command ? COMMANDS_MAP_default[command].inputs && !commandInputs ? /* @__PURE__ */ React11.createElement(FillInput, { inputs: COMMANDS_MAP_default[command].inputs, onFill: (dta) => setCommandInputs(dta) }) : /* @__PURE__ */ React11.createElement(
+  return /* @__PURE__ */ React11.createElement(React11.Fragment, null, /* @__PURE__ */ React11.createElement(Box8, { marginTop: 2, marginBottom: 1, marginLeft: 2, ...THEME.box.heading }, /* @__PURE__ */ React11.createElement(CoolTitle, { isPaused: !!result })), command ? COMMANDS_MAP_default[command].inputs && !commandInputs ? /* @__PURE__ */ React11.createElement(FillInput, { inputs: COMMANDS_MAP_default[command].inputs, onFill: (dta) => setCommandInputs(dta) }) : /* @__PURE__ */ React11.createElement(
     Loader,
     {
       func: commandInputs ? async () => COMMANDS_MAP_default[command].func(commandInputs) : COMMANDS_MAP_default[command].func,
@@ -467,10 +502,11 @@ function App_default() {
     }
   ) : /* @__PURE__ */ React11.createElement(SelectInput_default, { options: Object.keys(COMMANDS_MAP_default), onSelect: (d) => setCommand(d) }), result && /* @__PURE__ */ React11.createElement(React11.Fragment, null, /* @__PURE__ */ React11.createElement(Box8, null, result), /* @__PURE__ */ React11.createElement(Box8, { marginY: 1, marginLeft: 1 }, /* @__PURE__ */ React11.createElement(Text11, { ...THEME.text.info }, "[q|esc] to quit -:|:- [SPACE] to redo"))));
 }
-var CoolTitle = () => {
-  const [title, setTitle] = useState6("api-showcase".split(""));
+var CoolTitle = memo(({ isPaused = false }) => {
+  const [title, setTitle] = useState7("api-showcase".split(""));
   const indexToEdit = useRef(0);
-  useEffect3(() => {
+  useEffect4(() => {
+    if (isPaused) return;
     const intr = setInterval(() => {
       setTitle((p) => {
         const newTitle = [...p];
@@ -480,9 +516,9 @@ var CoolTitle = () => {
       });
     }, 333);
     return () => clearInterval(intr);
-  }, []);
+  }, [isPaused]);
   return /* @__PURE__ */ React11.createElement(React11.Fragment, null, title.map((c, indx) => /* @__PURE__ */ React11.createElement(Text11, { key: indx, color: /[A-Z]/.test(c) ? "yellowBright" : "whiteBright" }, c)));
-};
+});
 
 // main.jsx
 render(/* @__PURE__ */ React12.createElement(App_default, null));

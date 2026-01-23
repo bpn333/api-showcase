@@ -94,29 +94,29 @@ export default function AnimeSearch({ result }) {
                 </Text>
             </Box>
 
-            <Text
-                color={"magentaBright"}
-            >
-                Genres: {result[currentIndex].genres.map(nm => " " + nm.name)}
-            </Text>
-
-            <Text
-                color={"whiteBright"}
-            >
-                Score: {result[currentIndex].score} | Popularity: {result[currentIndex].popularity}
-            </Text>
-
-            <Box justifyContent="space-between" flexWrap="wrap">
-                <Text
-                    color={"green"}
-                >
-                    Episodes: {result[currentIndex].episodes} | Status: {result[currentIndex].status}
+            <Box justifyContent="space-between" borderStyle={"classic"} borderColor={"gray"}>
+                <Text color={"whiteBright"}>
+                    ⭐: {result[currentIndex].score || "??"} | 🔥: {result[currentIndex].popularity || "??"} | 📺: {result[currentIndex].episodes || "??"}
                 </Text>
 
                 <Text
                     color={"gray"}
                 >
-                    Aired On: {result[currentIndex].aired?.string}
+                    📅: {result[currentIndex].aired?.string}
+                </Text>
+            </Box>
+
+            <Box justifyContent="center">
+                <Text color={"green"}>
+                    Rating: {result[currentIndex].rating || "??"} | EP Info: [{result[currentIndex].duration || "??"}]/[{result[currentIndex].status || "??"}]
+                </Text>
+            </Box>
+
+            <Box justifyContent="center">
+                <Text
+                    color={"magentaBright"}
+                >
+                    {result[currentIndex].genres.map((nm, indx) => indx == 0 ? nm.name : ", " + nm.name)}
                 </Text>
             </Box>
         </Box>

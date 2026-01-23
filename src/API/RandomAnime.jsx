@@ -89,29 +89,29 @@ export default function RandomAnime({ result }) {
                 </Text>
             </Box>
 
-            <Text
-                color={"magentaBright"}
-            >
-                Genres: {result.genres.map(nm => " " + nm.name)}
-            </Text>
-
-            <Text
-                color={"whiteBright"}
-            >
-                Score: {result.score} | Popularity: {result.popularity}
-            </Text>
-
-            <Box justifyContent="space-between" flexWrap="wrap">
-                <Text
-                    color={"green"}
-                >
-                    Episodes: {result.episodes} | Status: {result.status}
+            <Box justifyContent="space-between" borderStyle={"classic"} borderColor={"gray"}>
+                <Text color={"whiteBright"}>
+                    ⭐: {result.score || "??"} | 🔥: {result.popularity || "??"} | 📺: {result.episodes || "??"}
                 </Text>
 
                 <Text
                     color={"gray"}
                 >
-                    Aired On: {result.aired?.string}
+                    📅: {result.aired?.string}
+                </Text>
+            </Box>
+
+            <Box justifyContent="center">
+                <Text color={"green"}>
+                    Rating: {result.rating || "??"} | EP Info: [{result.duration || "??"}]/[{result.status || "??"}]
+                </Text>
+            </Box>
+
+            <Box justifyContent="center">
+                <Text
+                    color={"magentaBright"}
+                >
+                    {result.genres.map((nm, indx) => indx == 0 ? nm.name : ", " + nm.name)}
                 </Text>
             </Box>
         </Box>

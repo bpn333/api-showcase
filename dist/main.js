@@ -5,7 +5,7 @@ import React12 from "react";
 import { render } from "ink";
 
 // src/App.jsx
-import React11, { memo, useEffect as useEffect4, useRef, useState as useState7 } from "react";
+import React11, { memo, useEffect as useEffect5, useRef, useState as useState7 } from "react";
 import { Box as Box8, Text as Text11, useInput as useInput5 } from "ink";
 
 // config.js
@@ -234,40 +234,21 @@ function RandomAnime({ result }) {
     /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "center" }, /* @__PURE__ */ React6.createElement(Text6, { ...THEME.text.info }, "Press 'o' to open anime page")),
     /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "center", flexWrap: "wrap" }, (_c = result.titles) == null ? void 0 : _c.map((n, indx) => /* @__PURE__ */ React6.createElement(Text6, { color: indx == 0 ? "yellowBright" : "whiteBright", key: indx }, " ", indx == 0 ? n.title : "[" + n.title + "]", " "))),
     /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "center" }, /* @__PURE__ */ React6.createElement(Text6, null, imgOut)),
-    /* @__PURE__ */ React6.createElement(
-      Text6,
-      {
-        color: "magentaBright"
-      },
-      "Genres: ",
-      result.genres.map((nm) => " " + nm.name)
-    ),
-    /* @__PURE__ */ React6.createElement(
-      Text6,
-      {
-        color: "whiteBright"
-      },
-      "Score: ",
-      result.score,
-      " | Popularity: ",
-      result.popularity
-    ),
-    /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "space-between", flexWrap: "wrap" }, /* @__PURE__ */ React6.createElement(
-      Text6,
-      {
-        color: "green"
-      },
-      "Episodes: ",
-      result.episodes,
-      " | Status: ",
-      result.status
-    ), /* @__PURE__ */ React6.createElement(
+    /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "space-between", borderStyle: "classic", borderColor: "gray" }, /* @__PURE__ */ React6.createElement(Text6, { color: "whiteBright" }, "\u2B50: ", result.score || "??", " | \u{1F525}: ", result.popularity || "??", " | \u{1F4FA}: ", result.episodes || "??"), /* @__PURE__ */ React6.createElement(
       Text6,
       {
         color: "gray"
       },
-      "Aired On: ",
+      "\u{1F4C5}: ",
       (_d = result.aired) == null ? void 0 : _d.string
+    )),
+    /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "center" }, /* @__PURE__ */ React6.createElement(Text6, { color: "green" }, "Rating: ", result.rating || "??", " | EP Info: [", result.duration || "??", "]/[", result.status || "??", "]")),
+    /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "center" }, /* @__PURE__ */ React6.createElement(
+      Text6,
+      {
+        color: "magentaBright"
+      },
+      result.genres.map((nm, indx) => indx == 0 ? nm.name : ", " + nm.name)
     ))
   );
 }
@@ -302,11 +283,56 @@ function Credit({ result }) {
 
 // src/API/AnimeSearch.jsx
 import open3 from "open";
-import React10, { useState as useState6 } from "react";
+import React10, { useState as useState6, useEffect as useEffect4 } from "react";
 import { Box as Box7, Text as Text10, useInput as useInput4 } from "ink";
+import Chafa2 from "chafa-wasm";
+var chafa2 = await Chafa2();
 function AnimeSearch({ result }) {
-  var _a, _b;
+  var _a, _b, _c, _d, _e;
   const [currentIndex, setCurrentIndex] = useState6(0);
+  const [imgOut, setImgOut] = useState6();
+  const imgUrl = (_c = (_b = (_a = result[currentIndex]) == null ? void 0 : _a.images) == null ? void 0 : _b.jpg) == null ? void 0 : _c.image_url;
+  useEffect4(() => {
+    if (!imgUrl) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(imgUrl);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const arrayBuffer = await res.arrayBuffer();
+        const decodedImage = await new Promise((resolve, reject) => {
+          chafa2.decodeImage(arrayBuffer, (err, result3) => {
+            if (err) reject(err);
+            else resolve(result3);
+          });
+        });
+        const result2 = await new Promise((resolve, reject) => {
+          chafa2.imageToAnsi(
+            decodedImage,
+            {
+              height: 15,
+              symbols: "braille",
+              colors: chafa2.ChafaCanvasMode.CHAFA_CANVAS_MODE_TRUECOLOR.value
+            },
+            (err, out) => {
+              if (err) reject(err);
+              else resolve(out);
+            }
+          );
+        });
+        if (!cancelled) {
+          setImgOut(result2.ansi);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setImgOut("Failed to render image: " + (e.message || e));
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [imgUrl]);
   useInput4((inpt, key) => {
     if (key.rightArrow)
       setCurrentIndex((p) => (p + 1) % result.length);
@@ -330,41 +356,23 @@ function AnimeSearch({ result }) {
       justifyContent: "flex-start"
     },
     /* @__PURE__ */ React10.createElement(Box7, { justifyContent: "center" }, /* @__PURE__ */ React10.createElement(Text10, { ...THEME.text.info }, "'o': open anime page  | ", "<", "- ", currentIndex + 1, "/", result.length, " -", ">")),
-    /* @__PURE__ */ React10.createElement(Box7, { justifyContent: "center", flexWrap: "wrap" }, (_a = result[currentIndex].titles) == null ? void 0 : _a.map((n, indx) => /* @__PURE__ */ React10.createElement(Text10, { color: indx == 0 ? "yellowBright" : "whiteBright", key: indx }, " ", indx == 0 ? n.title : "[" + n.title + "]", " "))),
-    /* @__PURE__ */ React10.createElement(
-      Text10,
-      {
-        color: "magentaBright"
-      },
-      "Genres: ",
-      result[currentIndex].genres.map((nm) => " " + nm.name)
-    ),
-    /* @__PURE__ */ React10.createElement(
-      Text10,
-      {
-        color: "whiteBright"
-      },
-      "Score: ",
-      result[currentIndex].score,
-      " | Popularity: ",
-      result[currentIndex].popularity
-    ),
-    /* @__PURE__ */ React10.createElement(Box7, { justifyContent: "space-between", flexWrap: "wrap" }, /* @__PURE__ */ React10.createElement(
-      Text10,
-      {
-        color: "green"
-      },
-      "Episodes: ",
-      result[currentIndex].episodes,
-      " | Status: ",
-      result[currentIndex].status
-    ), /* @__PURE__ */ React10.createElement(
+    /* @__PURE__ */ React10.createElement(Box7, { justifyContent: "center", flexWrap: "wrap" }, (_d = result[currentIndex].titles) == null ? void 0 : _d.map((n, indx) => /* @__PURE__ */ React10.createElement(Text10, { color: indx == 0 ? "yellowBright" : "whiteBright", key: indx }, " ", indx == 0 ? n.title : "[" + n.title + "]", " "))),
+    /* @__PURE__ */ React10.createElement(Box7, { justifyContent: "center" }, /* @__PURE__ */ React10.createElement(Text10, null, imgOut)),
+    /* @__PURE__ */ React10.createElement(Box7, { justifyContent: "space-between", borderStyle: "classic", borderColor: "gray" }, /* @__PURE__ */ React10.createElement(Text10, { color: "whiteBright" }, "\u2B50: ", result[currentIndex].score || "??", " | \u{1F525}: ", result[currentIndex].popularity || "??", " | \u{1F4FA}: ", result[currentIndex].episodes || "??"), /* @__PURE__ */ React10.createElement(
       Text10,
       {
         color: "gray"
       },
-      "Aired On: ",
-      (_b = result[currentIndex].aired) == null ? void 0 : _b.string
+      "\u{1F4C5}: ",
+      (_e = result[currentIndex].aired) == null ? void 0 : _e.string
+    )),
+    /* @__PURE__ */ React10.createElement(Box7, { justifyContent: "center" }, /* @__PURE__ */ React10.createElement(Text10, { color: "green" }, "Rating: ", result[currentIndex].rating || "??", " | EP Info: [", result[currentIndex].duration || "??", "]/[", result[currentIndex].status || "??", "]")),
+    /* @__PURE__ */ React10.createElement(Box7, { justifyContent: "center" }, /* @__PURE__ */ React10.createElement(
+      Text10,
+      {
+        color: "magentaBright"
+      },
+      result[currentIndex].genres.map((nm, indx) => indx == 0 ? nm.name : ", " + nm.name)
     ))
   );
 }
@@ -505,7 +513,7 @@ function App_default() {
 var CoolTitle = memo(({ isPaused = false }) => {
   const [title, setTitle] = useState7("api-showcase".split(""));
   const indexToEdit = useRef(0);
-  useEffect4(() => {
+  useEffect5(() => {
     if (isPaused) return;
     const intr = setInterval(() => {
       setTitle((p) => {

@@ -34,9 +34,12 @@ export default function () {
 
     return (
         <>
-            <Box marginTop={2} marginBottom={1} marginLeft={2} {...THEME.box.heading}>
-                <CoolTitle isPaused={!!result} />
-            </Box>
+            {
+                !result &&
+                <Box marginTop={2} marginBottom={1} marginLeft={2} {...THEME.box.heading}>
+                    <CoolTitle />
+                </Box>
+            }
             {
                 command ?
                     COMMANDS_MAP[command].inputs && !commandInputs
@@ -73,12 +76,11 @@ export default function () {
     )
 }
 
-const CoolTitle = memo(({ isPaused = false }) => {
+const CoolTitle = memo(() => {
     const [title, setTitle] = useState("api-showcase".split(''));
     const indexToEdit = useRef(0);
 
     useEffect(() => {
-        if (isPaused) return;
         const intr = setInterval(() => {
             setTitle(p => {
                 const newTitle = [...p];
@@ -91,7 +93,7 @@ const CoolTitle = memo(({ isPaused = false }) => {
             })
         }, 333)
         return () => clearInterval(intr)
-    }, [isPaused])
+    }, [])
 
     return (
         <>

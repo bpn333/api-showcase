@@ -242,7 +242,7 @@ function RandomAnime({ result }) {
       "\u{1F4C5}: ",
       (_d = result.aired) == null ? void 0 : _d.string
     )),
-    /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "center" }, /* @__PURE__ */ React6.createElement(Text6, { color: "green" }, "Rating: ", result.rating || "??", " | EP Info: [", result.duration || "??", "]/[", result.status || "??", "]")),
+    /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "center" }, /* @__PURE__ */ React6.createElement(Text6, { color: "green" }, result.rating || "Unknown Rating", " | [", result.duration || "??", "]/[", result.status || "Unknown Status", "]")),
     /* @__PURE__ */ React6.createElement(Box6, { justifyContent: "center" }, /* @__PURE__ */ React6.createElement(
       Text6,
       {
@@ -366,7 +366,7 @@ function AnimeSearch({ result }) {
       "\u{1F4C5}: ",
       (_e = result[currentIndex].aired) == null ? void 0 : _e.string
     )),
-    /* @__PURE__ */ React10.createElement(Box7, { justifyContent: "center" }, /* @__PURE__ */ React10.createElement(Text10, { color: "green" }, "Rating: ", result[currentIndex].rating || "??", " | EP Info: [", result[currentIndex].duration || "??", "]/[", result[currentIndex].status || "??", "]")),
+    /* @__PURE__ */ React10.createElement(Box7, { justifyContent: "center" }, /* @__PURE__ */ React10.createElement(Text10, { color: "green" }, result[currentIndex].rating || "Unknown Rating", " | [", result[currentIndex].duration || "??", "]/[", result[currentIndex].status || "Unknown Status", "]")),
     /* @__PURE__ */ React10.createElement(Box7, { justifyContent: "center" }, /* @__PURE__ */ React10.createElement(
       Text10,
       {
@@ -498,7 +498,7 @@ function App_default() {
     console.log("SORRY CANT RUN HERE");
     return;
   }
-  return /* @__PURE__ */ React11.createElement(React11.Fragment, null, /* @__PURE__ */ React11.createElement(Box8, { marginTop: 2, marginBottom: 1, marginLeft: 2, ...THEME.box.heading }, /* @__PURE__ */ React11.createElement(CoolTitle, { isPaused: !!result })), command ? COMMANDS_MAP_default[command].inputs && !commandInputs ? /* @__PURE__ */ React11.createElement(FillInput, { inputs: COMMANDS_MAP_default[command].inputs, onFill: (dta) => setCommandInputs(dta) }) : /* @__PURE__ */ React11.createElement(
+  return /* @__PURE__ */ React11.createElement(React11.Fragment, null, !result && /* @__PURE__ */ React11.createElement(Box8, { marginTop: 2, marginBottom: 1, marginLeft: 2, ...THEME.box.heading }, /* @__PURE__ */ React11.createElement(CoolTitle, null)), command ? COMMANDS_MAP_default[command].inputs && !commandInputs ? /* @__PURE__ */ React11.createElement(FillInput, { inputs: COMMANDS_MAP_default[command].inputs, onFill: (dta) => setCommandInputs(dta) }) : /* @__PURE__ */ React11.createElement(
     Loader,
     {
       func: commandInputs ? async () => COMMANDS_MAP_default[command].func(commandInputs) : COMMANDS_MAP_default[command].func,
@@ -510,11 +510,10 @@ function App_default() {
     }
   ) : /* @__PURE__ */ React11.createElement(SelectInput_default, { options: Object.keys(COMMANDS_MAP_default), onSelect: (d) => setCommand(d) }), result && /* @__PURE__ */ React11.createElement(React11.Fragment, null, /* @__PURE__ */ React11.createElement(Box8, null, result), /* @__PURE__ */ React11.createElement(Box8, { marginY: 1, marginLeft: 1 }, /* @__PURE__ */ React11.createElement(Text11, { ...THEME.text.info }, "[q|esc] to quit -:|:- [SPACE] to redo"))));
 }
-var CoolTitle = memo(({ isPaused = false }) => {
+var CoolTitle = memo(() => {
   const [title, setTitle] = useState7("api-showcase".split(""));
   const indexToEdit = useRef(0);
   useEffect5(() => {
-    if (isPaused) return;
     const intr = setInterval(() => {
       setTitle((p) => {
         const newTitle = [...p];
@@ -524,7 +523,7 @@ var CoolTitle = memo(({ isPaused = false }) => {
       });
     }, 333);
     return () => clearInterval(intr);
-  }, [isPaused]);
+  }, []);
   return /* @__PURE__ */ React11.createElement(React11.Fragment, null, title.map((c, indx) => /* @__PURE__ */ React11.createElement(Text11, { key: indx, color: /[A-Z]/.test(c) ? "yellowBright" : "whiteBright" }, c)));
 });
 

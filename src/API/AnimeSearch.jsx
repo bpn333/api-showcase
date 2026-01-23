@@ -108,7 +108,7 @@ export default function AnimeSearch({ result }) {
 
             <Box justifyContent="center">
                 <Text color={"green"}>
-                    Rating: {result[currentIndex].rating || "??"} | EP Info: [{result[currentIndex].duration || "??"}]/[{result[currentIndex].status || "??"}]
+                    {result[currentIndex].rating || "Unknown Rating"} | [{result[currentIndex].duration || "??"}]/[{result[currentIndex].status || "Unknown Status"}]
                 </Text>
             </Box>
 

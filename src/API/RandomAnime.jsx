@@ -103,7 +103,7 @@ export default function RandomAnime({ result }) {
 
             <Box justifyContent="center">
                 <Text color={"green"}>
-                    Rating: {result.rating || "??"} | EP Info: [{result.duration || "??"}]/[{result.status || "??"}]
+                    {result.rating || "Unknown Rating"} | [{result.duration || "??"}]/[{result.status || "Unknown Status"}]
                 </Text>
             </Box>
 

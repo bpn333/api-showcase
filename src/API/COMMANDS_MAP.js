@@ -16,27 +16,27 @@ export default {
         expectedTime: 0.8
     },
     "Get Random Anime to Watch": {
-        func: () => fetch("https://api.jikan.moe/v4/random/anime").then(r => r.json()).then(d => {
+        func: () => fetch("https://api.tenrai.org/v1/random/anime").then(r => r.json()).then(d => {
             if (!d.data) throw Error(d?.message ?? "Unknown Error");
             return d.data;
         })
             .catch(e => ({
                 error: "Request Failed",
                 message: e.message,
-                url: "https://api.jikan.moe/v4/random/anime",
+                url: "https://api.tenrai.org/v1/random/anime",
             })),
         component: RandomAnime,
         expectedTime: 1.3
     },
     "Anime Search": {
-        func: ({ query, limit = 5 }) => fetch(`https://api.jikan.moe/v4/anime?q=${encodeURI(query)}&limit=${limit}`).then(r => r.json()).then(d => {
+        func: ({ query, limit = 5 }) => fetch(`https://api.tenrai.org/v1/anime?q=${encodeURI(query)}&limit=${limit}`).then(r => r.json()).then(d => {
             if (!d.data) throw Error(d?.message ?? "Unknown Error");
             return d.data;
         })
             .catch(e => ({
                 error: "Request Failed",
                 message: e.message,
-                url: `https://api.jikan.moe/v4/anime?q=${encodeURI(query)}&limit=${limit}`,
+                url: `https://api.tenrai.org/v1/anime?q=${encodeURI(query)}&limit=${limit}`,
             })),
         component: AnimeSearch,
         inputs: [
